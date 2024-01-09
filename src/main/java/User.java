@@ -66,7 +66,7 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
         x = mouseEvent.getX();
         y = mouseEvent.getY();
 
-        lines.get(lines.size() - 1).getPoints().add(new LinePoint(x, y));
+        lines.getLast().getPoints().add(new LinePoint(x, y));
     }
 
 
@@ -131,7 +131,7 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
             lines.add(new Line(lineColor, new ArrayList<>()));
         }
 
-        ArrayList<LinePoint> lastPointsArray = lines.get(lines.size() - 1).getPoints();
+        ArrayList<LinePoint> lastPointsArray = lines.getLast().getPoints();
 
         if (!lastPointsArray.isEmpty()) {
             lines.add(new Line(lineColor, new ArrayList<>()));
