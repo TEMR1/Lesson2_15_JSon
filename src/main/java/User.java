@@ -11,11 +11,16 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
     private int y;
     private boolean isReleased = true;
     private boolean isSaved = false;
+    private boolean colorIsAdd = false;
     private Color lineColor = Color.black;
 
-    private final ArrayList<Line> lines = new ArrayList<>();
+    private final ArrayList<ArrayList<LinePoint>> points = new ArrayList<>();
+    private final ArrayList<Color> colors = new ArrayList<>();
 
+    private final static TxtDataBase txtDataBase = new TxtDataBase();
     User() {
+        points.add(new ArrayList<>());
+
         CreateLayout();
         CreateButtons();
     }
@@ -56,7 +61,7 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
 
     //---------------------------------DRAWER---------------------------------------
     private Color chooseColor() {
-        return JColorChooser.showDialog(this, "Виберіть колір", lineColor);
+        return JColorChooser.showDialog(this, "Choose color", lineColor);
     }
 
     private void draw(MouseEvent mouseEvent) {
@@ -66,29 +71,29 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
         x = mouseEvent.getX();
         y = mouseEvent.getY();
 
-        lines.getLast().getPoints().add(new LinePoint(x, y));
+        points.getLast().add(new LinePoint(x, y));
     }
 
 
     private void readPointsFromJSon() {
+        ArrayList<ArrayList<LinePoint>> linePoints = Utils.readFromJson(txtDataBase.read());
+
         if (isSaved) {
             Graphics g = getGraphics();
 
-            for (int i = 0; i < lines.size() - 1; i++) {
-                Line line = lines.get(i);
-
-                ArrayList<LinePoint> points = line.getPoints();
-                g.setColor(lines.get(i + 1).getColor());
+            for (int i = 0; i < linePoints.size() - 1; i++) {
+                ArrayList<LinePoint> points = linePoints.get(i);
+                g.setColor(colors.get(i));
 
                 for (LinePoint firstPoint : points) {
-                    int x1 = firstPoint.getX();
-                    int y1 = firstPoint.getY();
+                    int x1 = firstPoint.x();
+                    int y1 = firstPoint.y();
 
                     if (points.indexOf(firstPoint) + 1 < points.size()) {
                         LinePoint secondPoint = points.get(points.indexOf(firstPoint) + 1);
 
-                        int x2 = secondPoint.getX();
-                        int y2 = secondPoint.getY();
+                        int x2 = secondPoint.x();
+                        int y2 = secondPoint.y();
 
                         g.drawLine(x1, y1, x2, y2);
                     }
@@ -96,19 +101,20 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
             }
 
         } else {
-            System.out.println("Нічого ще не збережено!");
+            System.out.println("Nothing saved yet!");
         }
 
         isSaved = false;
     }
 
     private void savePointsToJSon() {
+        txtDataBase.save(Utils.saveToJson(points));
         isSaved = true;
         repaint();
     }
 
     private void clearScreen() {
-        lines.clear();
+        points.clear();
         repaint();
     }
 
@@ -116,6 +122,8 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
     //--------------------------ACTION LISTENER---------------------------
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
+        colorIsAdd = false;
+
         if (isReleased) {
             y = mouseEvent.getY();
             x = mouseEvent.getX();
@@ -127,15 +135,17 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
-        if (lines.isEmpty()) {
-            lines.add(new Line(lineColor, new ArrayList<>()));
-        }
-
-        ArrayList<LinePoint> lastPointsArray = lines.getLast().getPoints();
+        ArrayList<LinePoint> lastPointsArray = points.getLast();
 
         if (!lastPointsArray.isEmpty()) {
-            lines.add(new Line(lineColor, new ArrayList<>()));
+            points.add(new ArrayList<>());
+
+            if (!colorIsAdd) {
+                colors.add(lineColor);
+                colorIsAdd = true;
+            }
         }
+
         isReleased = true;
     }
 
