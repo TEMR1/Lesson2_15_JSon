@@ -21,7 +21,6 @@ public class TxtDataBase {
             }
         } catch (IOException e) {
             System.out.println("An error occurred.");
-            e.printStackTrace();
         }
     }
 
@@ -33,7 +32,6 @@ public class TxtDataBase {
             System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
             System.out.println("An error occurred.");
-            e.printStackTrace();
         }
     }
 
@@ -56,7 +54,7 @@ public class TxtDataBase {
             try {
                 br.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("An error occurred.");
             }
         }
         return sb.toString();

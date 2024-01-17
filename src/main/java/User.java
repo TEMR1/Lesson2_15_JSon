@@ -11,7 +11,6 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
     private int y;
     private boolean isReleased = true;
     private boolean isSaved = false;
-    private boolean colorIsAdd = false;
     private Color lineColor = Color.black;
 
     private final ArrayList<ArrayList<LinePoint>> points = new ArrayList<>();
@@ -122,8 +121,6 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
     //--------------------------ACTION LISTENER---------------------------
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        colorIsAdd = false;
-
         if (isReleased) {
             y = mouseEvent.getY();
             x = mouseEvent.getX();
@@ -139,11 +136,7 @@ public class User extends JFrame implements MouseMotionListener, ActionListener 
 
         if (!lastPointsArray.isEmpty()) {
             points.add(new ArrayList<>());
-
-            if (!colorIsAdd) {
-                colors.add(lineColor);
-                colorIsAdd = true;
-            }
+            colors.add(lineColor);
         }
 
         isReleased = true;
